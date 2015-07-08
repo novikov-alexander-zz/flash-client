@@ -440,7 +440,7 @@
 						delete waitingVirAndPlasm[String(_gx) + "x" +String(_gy)];
 						plasm.x = _x;
 						plasm.y = _y;
-						plasm.csize = size;
+						//plasm.csize = size;
 						plasm.recovery();
 					}
 					
