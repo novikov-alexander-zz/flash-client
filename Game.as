@@ -596,17 +596,16 @@
 				coll = false;
 				fa.x = (fa._gx+xa)*xm;
 				fa.y = (fa._gy+ya)*ym;
-				for (i = 0; i < maxPlayers;i++){
-					for each (var ffc:Cell in renderedCells[i])
-						if (fa.hitCell(ffc)){
-							coll = true;
-							break;
-						}
-				}
-				if (coll)
+				if (fa.hitWall())
 					delete _feed[fa.fid];
 				else {
-					if(fa.hitWall())
+					for (i = 0; i < maxPlayers;i++){
+						for each (var ffc:Cell in renderedCells[i])
+							if (fa.hitCell(ffc)){
+								coll = true;
+								break;
+							}
+					if(coll)
 						delete _feed[fa.fid];
 					else
 						feedSpr.addChildAt(fa, 0);
