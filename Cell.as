@@ -6,6 +6,7 @@
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.display.BitmapData;
+	import flash.display.LineScaleMode;
 	import flash.geom.Matrix;
 
 	public class Cell extends Body {
@@ -77,38 +78,43 @@
 			var bY:Number = b.y;
 			var bSize:Number = b._size;
 			
-			var dist:Number = Math.sqrt((aX - bX)*(aX - bX) + (aY - bY)*(aY - bY));
-			if (dist >= bSize + aSize){
+			var dist2:Number = (aX - bX)*(aX - bX) + (aY - bY)*(aY - bY);
+			var sSize:Number = bSize+aSize;
+			if (dist2 >= sSize*sSize){
 				//return a;
 				return;
 			}
 			bSize *= bSize;
+			bSize = 1/bSize;
 			aSize *= aSize;
 			//trace("2")
 			var radius:Number;
 			var apX:Number;
 			var apY:Number;
 			//trace("3")
-			for (var i:int = 0; i < a._points.length; i += 1){
+			for (var i:int = 0; i < a.pointsCount; i += 1){
 				//trace("4")
-				apX = a._points[i].sx() + aX;
+				var point:CellPoint = a._points[i];
+				apX = point.sx() + aX;
 				//trace("4.1")
-				apY = a._points[i].sy() + aY;
+				apY = point.sy() + aY;
 				//trace("4.2")
-				dist = ((apX - bX)*(apX - bX) + (apY - bY)*(apY - bY))/bSize;
+				dist2 = ((apX - bX)*(apX - bX) + (apY - bY)*(apY - bY))*bSize;
 				//trace("4.3")
-				if (dist > 1){
+				if (dist2 > 1){
 					continue;
 				}
 				//trace("5")
-				radius = a._points[i].size();
-				while((dist < radius*radius) && (dist < 1) && (radius > 0.7)){
+				radius = point.size();
+				var r2:Number = radius*radius;
+				while((dist2 < r2*r2) && (dist2 < 1) && (radius > 0.7)){
 					//trace("5")
-					a._points[i].decreaseSize(0.05);
+					point.decreaseSize(0.05);
+					r2 -= 0.0025;
 					radius -= 0.05;
-					apX = a._points[i].sx() + aX;
-					apY = a._points[i].sy() + aY;
-					dist = ((apX - bX)*(apX - bX) + (apY - bY)*(apY - bY))/bSize;
+					apX = point.sx() + aX;
+					apY = point.sy() + aY;
+					dist2 = ((apX - bX)*(apX - bX) + (apY - bY)*(apY - bY))*bSize;
 					
 				}
 				//trace("6")
@@ -150,20 +156,20 @@
 			var cY:Number = this.y;
 			var cSize:Number = this._size;
 
-			if (cX + cSize < game.crb && cX - cSize > game.clb && cY - cSize > game.ctb && cY + cSize < game.cbb){
+			/*if (cX + cSize < game.crb && cX - cSize > game.clb && cY - cSize > game.ctb && cY + cSize < game.cbb){
 				return;
-			}
+			}*/
 			//trace("lol2")
 			//trace((cX > game.crb || cX < game.clb || cY < game.ctb || cY > game.cbb))
-			if (cX > game.crb  || cX < game.clb || cY < game.ctb || cY > game.cbb){
+			/*if (cX > game.crb  || cX < game.clb || cY < game.ctb || cY > game.cbb){
 				return;
-			}
+			}*/
 			//trace("lol1")
 			var pX;
 			var pY;
-			for (var i:int = 0; i < this._points.length; i += 1){
-				pX = this._points[i].sx() + cX;
-				pY = this._points[i].sy() + cY;
+			for (var i:int = 0; i < _points.length; i += 1){
+				pX = _points[i].sx() + cX;
+				pY = _points[i].sy() + cY;
 				while((pX > game.crb || pX < game.clb || pY < game.ctb || pY > game.cbb) && (this._points[i].size() > 0.55)){
 					//trace("lol")
 					this._points[i].decreaseSize(0.05);
@@ -257,7 +263,7 @@
 			//drawToBuf();
 			rounderObject.graphics.clear();
 			rounderObject.graphics.beginFill(color);
-			rounderObject.graphics.lineStyle(3, color + 0x006600);
+			rounderObject.graphics.lineStyle(3, color + 0x006600, 1.0, false, LineScaleMode.NONE);
 			rounderObject.graphics.moveTo(_points[0].sx(), _points[0].sy());
 
 			for(var i: uint = 0; i < pointsCount; i++) {
@@ -269,7 +275,7 @@
 			buf.graphics.clear();
 
 			buf.graphics.beginFill(color);
-			buf.graphics.lineStyle(3, color + 0x006600);
+			buf.graphics.lineStyle(3, color + 0x006600, 1.0, false, LineScaleMode.NONE);
 			buf.graphics.moveTo(_points[0].sx(), _points[0].sy());
 
 			for(var i: uint = 0; i < pointsCount; i++) {

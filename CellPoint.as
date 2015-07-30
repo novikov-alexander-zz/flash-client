@@ -11,16 +11,15 @@
 			super(_x, _y);
 			this._size = _size;
 
-			var l = Math.sqrt(_x * _x + _y * _y);
-			ox = _x / l;
-			oy = _y / l;
+			ox = _x;
+			oy = _y;
 		}
 
 		public function sx(): Number {
-			return super.x * _size;
+			return super.x;
 		}
 		public function sy(): Number {
-			return super.y * _size;
+			return super.y;
 		}
 		public function ssx(n: Number = 18.0): Number {
 			return (super.x + n * ox) * _size;
@@ -35,14 +34,20 @@
 
 		public function decreaseSize(n: Number = 0.01): void {
 			_size -= n;
+			super.x = ox*_size;
+			super.y = oy*_size;
 		}
 
 		public function increaseSize(n: Number = 0.05): void {
 			_size += n;
+			super.x = ox*_size;
+			super.y = oy*_size;
 		}
 
 		public function setSize(size: Number): void {
 			_size = size;
+			super.x = ox*_size;
+			super.y = oy*_size;
 		}
 	}
 

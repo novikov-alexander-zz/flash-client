@@ -70,15 +70,24 @@
 		}
 
 		public function hitCell(c: Cell): Boolean {
-			if (((c.x-x)*(c.x-x)+(c.y-y)*(c.y-y)) < c.csize*c.csize)
+			var dx:Number = c.x-x;
+			var dy:Number = c.y-y;
+			if (((dx-c.csize)*(dx+c.csize)+dy*dy) < 0)
 					return true;
 			return false;
 		}
-		public function hitWall(): Boolean {
-			if((x < 0) && (x > 850) && (y < 0) && (y > 650))
+		
+		
+		public function hitWall(dx:Number, dy:Number): Boolean {
+			var _x:Number = x - dx;
+			var _y:Number = y - dy;
+
+			if((_x < -10) || (_x > 860) || (_y < -10) || (_y > 660)){
 				return true;
+			}
 			return false;
 		}
+		
 		public function draw() {
 			//drawToBuf();
 			rounderObject.graphics.clear();

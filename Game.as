@@ -403,7 +403,7 @@
 			playersGotten = true;
 			for (var k:int = 0, i: int = 0; i < m.length; k++,i += 2)
 			{
-				nnArr[m.getInt(i)-1000] = m.getString(i+1);
+				nnArr[m.getInt(i)] = m.getString(i+1);
 			}
 		}
 		
@@ -432,10 +432,9 @@
 				nextX = nextMsg.getNumber(1);
 				nextY = nextMsg.getNumber(2);
 			}
-			var dx = (nextX - lastX)/koeff;
-			var dy = (nextY - lastY)/koeff;
-			var sdx = dx/xArea*stage.stageWidth;
-			var sdy = dy/yArea*stage.stageHeight;
+			var dx = nextX - lastX;
+			var dy = nextY - lastY;
+
 			if(playersGotten)
 				drawWorld(nextMsg, dx, dy);
 			
@@ -465,9 +464,9 @@
 			playersCellsInstances.removeChildren();
 			xArea = m.getNumber(3);
 			yArea = m.getNumber(4);
-			var curX: Number = lastX + dx;
-			var curY: Number = lastY + dy;
-			var xm:Number = ((stage.stageWidth as Number)+200)/xArea;
+			var curX: Number = lastX + dx/koeff;
+			var curY: Number = lastY + dy/koeff;
+			var xm:Number = (stage.stageWidth as Number)/xArea;
 			var ym:Number = xm;
 			bckg.x = -(curX*xm)%(17*xm);
 			bckg.y = -(curY*ym)%(17*ym);
@@ -475,8 +474,8 @@
 				bckg.drawWithSize(17*xm);//17.1 - это 45/startXm
 			lastxm = xm;
 			
-			var xa:Number = xArea/2 - curX - 100/xm;
-			var ya:Number = yArea/2 - curY - 100/xm;
+			var xa:Number = xArea/2 - curX;
+			var ya:Number = yArea/2 - curY;
 			
 			clb = (lb+xa)*xm;
 			crb = (rb+xa)*xm;
@@ -498,7 +497,7 @@
 				var _y:Number = (_gy + ya)*ym;
 				var size:Number;			
 
-				if(id < 1000000){
+				if(id < 1000000 && id != 1000000){
 					var virus: Cell = waitingVirAndPlasm[id];
 					size = m.getNumber(i + 3)*xm;
 					if (virus == undefined){
@@ -524,7 +523,7 @@
 					renderedVirAndPlasm[id] = virus;
 					world.addChild(virus);
 					i+=4;
-				} else if(id < 2000000){
+				} else if(id < 2000000 && id != 1000000){
 					var pid:uint = uint((id - 1000000)/1000);
 					var cellDict:BodiesDictionary = waitingCells[pid];
 					var cell:Cell;
@@ -536,8 +535,8 @@
 						delete waitingCells[pid][id];
 						if (cell == undefined)
 							cell = new Cell(_x,_y,size,pid,false,showNick,showMass, nnArr[pid]);
-						var ddx = ((_gx + xArea/2 - m.getNumber(1)- 100/xm)*xm-cell.x)/koeff;
-						var ddy = ((_gy + yArea/2 - m.getNumber(2)- 100/xm)*ym-cell.y)/koeff;
+						var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-cell.x)/koeff;
+						var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-cell.y)/koeff;
 						cell.x += ddx;
 						cell.y += ddy;
 						cell.recovery();
@@ -551,7 +550,7 @@
 					renderedCells[pid][id] = cell;
 					playersCellsInstances.addChild(cell);
 					i+=4;
-				} else if (id < 3000000){
+				} else if (id < 3000000 && id != 1000000){
 					var plasm: Protoplasm = waitingVirAndPlasm[id];
 					size = m.getNumber(i + 3)*xm;
 					if (plasm == undefined){
@@ -574,19 +573,19 @@
 					renderedVirAndPlasm[id] = plasm;
 					world.addChild(plasm);
 					i+=4;
-				} else i+=3;
+				} else i+=4;
 			}
 			
 			lastX = curX;
 			lastY = curY;
-			for each (var ca in renderedCells){
-				for each (var cc in ca){
+			for (i = 0; i < maxPlayers;i++){
+				for each (var cc in renderedCells[i]){
 					cc.hbTest(this);
 					cc.smooth();
 					cc.draw();
 				}
 			}
-			for each (ca in renderedVirAndPlasm){
+			for each (var ca in renderedVirAndPlasm){
 					ca.hbTest(this);
 					ca.smooth();
 					ca.draw();
@@ -597,17 +596,19 @@
 				fa.x = (fa._gx+xa)*xm;
 				fa.y = (fa._gy+ya)*ym;
 				for (i = 0; i < maxPlayers;i++){
-					for each (var ffc:Cell in renderedCells[i])
+					for each (var ffc:Cell in renderedCells[i]){
 						if (fa.hitCell(ffc)){
 							coll = true;
 							break;
 						}
+					}
 				}
 				if (coll)
 					delete _feed[fa.fid];
 				else {
-					if(fa.hitWall())
+					if(fa.hitWall(dx,dy)){
 						delete _feed[fa.fid];
+					}
 					else
 						feedSpr.addChildAt(fa, 0);
 				}
@@ -615,7 +616,7 @@
 			var tVec:Vector.<BodiesDictionary> = waitingCells;
 			waitingCells = renderedCells;
 			renderedCells = tVec;
-			for (var j:int = 150; j >= 0; j--)
+			for (var j:int = maxPlayers; j >= 0; j--)
 				renderedCells[j] = new BodiesDictionary(); 
 			waitingVirAndPlasm = renderedVirAndPlasm;
 			renderedVirAndPlasm = new Dictionary();
