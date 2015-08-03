@@ -210,14 +210,15 @@
 						if (e.keyCode == 67) openSMBox();
 						if (messageString.text.length > 49){
 							messageString.type = TextFieldType.DYNAMIC;
+							//stage.focus = this;
 						}
 					}
 				}
-				
-				if (messageString.text.length > 49){
+			}
+			if (messageString.text.length > 49){
 					messageString.type = TextFieldType.DYNAMIC;
+					//stage.focus = this;
 				}
-			} 
 		}
 
 		private function init(event: Event): void {
@@ -257,20 +258,49 @@
 			addChild(messageString);
 			messageString.visible = true;
 			messageString.x = 10;
-			messageString.y = 420;
+			messageString.y = 100;
 			messageString.alpha = 0.8;
 			messageString.width = 200;
 			messageString.type = TextFieldType.INPUT;
 			//goPlay();
 		}
 		
+		public function onRoomListGet(result):void{
+			for each (var room in result){
+				if (room.onlineUsers < 150){
+					trace(room.id);
+					cl.multiplayer.createJoinRoom(
+					room.id, // Идентификатор комнаты. Если устаноить null то идентификатор будет присвоен случайный
+					"MyCode", // Тип игры запускаемый на сервере (привязка к серверному коду)
+					true, // Должна ли конмата видима в списке комнат? (client.multiplayer.listRooms)
+					{}, // Какие-либо данные пользователя.
+					{},
+					handleJoin, // Указатель на метод который будет вызван при успешном подключении к комнате.
+					handleError // Указатель на метод который будет вызван в случаее ошибки подключения
+					);
+					return;
+				}
+			}
+			cl.multiplayer.createJoinRoom(null,  //Генерируем рандомный ID
+									 "MyCode", // Тип игры запускаемый на сервере (привязка к серверному коду)
+									  true, // Должна ли конмата видима в списке комнат? (client.multiplayer.listRooms)
+									  {}, // Какие-либо данные. Эти данные будут возвращены в список комнат. Значения могут быть изменены на сервере.
+									  {},
+									  handleJoin, // Указатель на метод который будет вызван при успешном подключении к комнате.
+									  handleError // Указатель на метод который будет вызван в случаее ошибки подключения
+									  );
+		}
+
 		public function goPlay():void{
 			menu.visible = false;
 			vkapi.visible = false;
-			lastX = 0;
-			lastY = 0;
-			nextX = 0;
-			nextY = 0;
+			playersGotten = false;
+			fsu = 0;
+			trace("goPlay()");
+			//lastX = 0;
+			//lastY = 0;
+			//nextX = 0;
+			//nextY = 0;
 			// Создаем или подключаемся к игровой комнате "test"
 			connection.disconnect();
 			stage.removeEventListener(MouseEvent.MOUSE_DOWN, buttonPressed);
@@ -288,7 +318,9 @@
 			connection.removeMessageHandler("playerDead", playerDead);
 			
 			_feed = new Dictionary();
-			if(cl!=null)
+			if(cl!=null){
+				cl.multiplayer.listRooms("MyCode", {}, 0, 0, onRoomListGet,  function(){trace("fail")});
+			}/*if(cl!=null) // Если мы подсоединились к серверу
 				cl.multiplayer.createJoinRoom(
 					"test", // Идентификатор комнаты. Если устаноить null то идентификатор будет присвоен случайный
 					"MyCode", // Тип игры запускаемый на сервере (привязка к серверному коду)
@@ -298,7 +330,7 @@
 					handleJoin, // Указатель на метод который будет вызван при успешном подключении к комнате.
 					handleError // Указатель на метод который будет вызван в случаее ошибки подключения
 				);
-					
+				*/	
 		}
 		
 		private function playerDead(m: Message):void{
@@ -371,8 +403,6 @@
 			connection.addMessageHandler("newPlayer", newPlayerJoined); // Добавление обработчика сообщения о присоединении нового игрока
 			connection.addMessageHandler("playerLeft", playerLeft); // Добавление обработчика сообщения о уходе какого-либо игрока
 			*/
-			connection.send("playersListRequest");
-			connection.send("setNickname", nickName);
 			connection.addMessageHandler("mouseRequest", sendMouseXY); // Добавление обработчика сообщения-запроса текущих координат мыши
 
 			connection.addMessageHandler("currentState", update);
@@ -381,6 +411,9 @@
 			connection.addMessageHandler("playersList", playersList);
 			connection.addMessageHandler("saying", onMessageGot);
 			connection.addMessageHandler("playerDead", playerDead);
+			
+			//connection.send("playersListRequest");
+			connection.send("setNickname", nickName);
 		}
 		
 		private function onMessageGot(m: Message){
@@ -401,6 +434,7 @@
 		
 		private function playersList(m: Message) {
 			playersGotten = true;
+			//trace(m);
 			for (var k:int = 0, i: int = 0; i < m.length; k++,i += 2)
 			{
 				nnArr[m.getInt(i)] = m.getString(i+1);
@@ -507,7 +541,7 @@
 						delete waitingVirAndPlasm[id];
 						//var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-virus.x)/koeff;
 						//var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-virus.y)/koeff;
-						//virus.x += ddx
+						//virus.x += ddx;
 						//virus.y += ddy;
 						virus.x = _x;
 						virus.y = _y;
@@ -1047,7 +1081,7 @@
 		 * @private
 		 */
 		private function handleError(error: PlayerIOError): void {
-
+			trace(error);
 		}
 
 	}

@@ -70,6 +70,7 @@
 			showNickChb.selected = game.showNick > 0;
 			showSkinsChb.selected = game.showSkins > 0;
 			themeNoSelector.value = game.themeNo;
+			stage.focus = nickNameFld;
 		}
 
 		private function helpBtnHandler(e: MouseEvent): void {
