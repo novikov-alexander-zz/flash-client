@@ -37,6 +37,8 @@
 			var k: Number = 2 * Math.PI / pointsCount;
 			for(var i: uint = 0; i < pointsCount; i++) {
 				_thornCoeff = (i % 2) && _isVir ? 0.9 : 1;
+				//ВНИМАНИЕ! Стоит обратить внимание, что тут под сайзом точки, передаваемым третьим параметром, понимается ее коэффициент деформации.
+				//При желании можно изменить это: передавать единичный вектор и настоящую удаленность от центра, но тогда нужно менять hitCells.
 				_points.push(new CellPoint(_size * Math.sin(i * k) * _thornCoeff, _size * Math.cos(i * k) * _thornCoeff));
 			}
 			rounderObject = new Shape();
