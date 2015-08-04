@@ -451,8 +451,8 @@
 			world.graphics.lineTo(clb,cbb);
 			world.graphics.lineTo(clb,ctb);
 		
-			for (var i:uint = 5; i < m.length;) {
-				var id:uint = m.getInt(i);
+			for (var i:int = 5; i < m.length;) {
+				var id:int = m.getInt(i);
 				var _gx:Number = m.getNumber(i+1);
 				var _gy:Number = m.getNumber(i+2);
 				var _x:Number = (_gx + xa)*xm;
@@ -464,15 +464,14 @@
 					size = m.getNumber(i + 3)*xm;
 					if (virus == undefined){
 						virus = new Cell(_x, _y, size, 0x00FF00, true);
-						
 					} else {
 						delete waitingVirAndPlasm[id];
-						//var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-virus.x)/koeff;
-						//var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-virus.y)/koeff;
-						//virus.x += ddx;
-						//virus.y += ddy;
-						virus.x = _x;
-						virus.y = _y;
+						var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-virus.x)/koeff;
+						var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-virus.y)/koeff;
+						virus.x += ddx;
+						virus.y += ddy;
+						//virus.x = _x;
+						//virus.y = _y;
 						virus.csize = size;
 						virus.recovery();
 					}
@@ -594,15 +593,15 @@
 		}
 		
 		private function addFood(m:Message){
-			for (var i:uint = 0; i < m.length; i+=3){
-				var id:uint = m.getInt(i);
+			for (var i:int = 0; i < m.length; i+=3){
+				var id:int = m.getInt(i);
 				var _gx:Number = m.getNumber(i+1);
 				var _gy:Number = m.getNumber(i+2);
-				var xm:Number = ((stage.stageWidth as Number)+200)/xArea;
+				var xm:Number = (stage.stageWidth as Number)/xArea;
 				var ym:Number = xm;
 			
-				var xa:Number = xArea/2 - lastX - 100/xm;
-				var ya:Number = yArea/2 - lastY - 100/xm;
+				var xa:Number = xArea/2 - lastX;
+				var ya:Number = yArea/2 - lastY;
 				var _x:Number = (_gx + xa)*xm;
 				var _y:Number = (_gy + ya)*ym;
 				if (id >=3000000){

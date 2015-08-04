@@ -11,8 +11,7 @@
 	public class Chart extends Sprite
 	{
 		private var txtArea:TextField = new TextField();
-		//private var LAG:int = 5000;
-		//public  var txtArea1:TextField = new TextField();
+
 		private var msg:Array = new Array("", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
 		public var nMsg:int;
 		private var allText:String;
@@ -21,12 +20,8 @@
 		{
 			trace("constructor");
 			nMsg = 0;
-			//this.width = 850;
-			//this.height = 100;
 			txtArea.x = 0;
 			txtArea.y = 0;
-			//txtArea1.x = 0;
-			//txtArea1.y = -20;
 			txtArea.width = 250;
 			txtArea.height = 480;
 			format1.font = "Verdana";
@@ -35,19 +30,8 @@
 			txtArea.selectable = false;
 			txtArea.mouseEnabled = false;
 			txtArea.setTextFormat(format1);
-			//txtArea1.selectable = false;
-			//txtArea1.mouseEnabled = false;
-			//txtArea1.setTextFormat(format1);
-			//setMsg('12345678','01234567890123456789012345678901234567890123456789012345','ff0000');
-			//txtArea.text = "Label";
-			//txtArea.htmlText = "";
 			txtArea.alpha = 0.6;
-			//txtArea1.text = "Label1";
 			addChild(txtArea);
-			//addChild(txtArea1);
-			//var a:int = 1024;
-			//trace(a.toString(16))
-			
 		}
 		
 		private function _setMsg(_msgText:String)
@@ -63,10 +47,6 @@
 				msg[msg.length - 1] = _msgText;
 			}
 
-			//allText = msg[0] + "\n" + msg[1] + "\n" + 
-			//				  msg[2] + "\n" + msg[3] + "\n" + 
-			//				  msg[4] + "\n" + msg[5] + "\n" + msg[6] ;
-			
 			allText = "";
 			for (var i:int = 0; i < 15; i += 1){
 				allText = allText + msg[14 - i] + "\n"

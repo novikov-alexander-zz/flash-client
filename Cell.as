@@ -8,6 +8,7 @@
 	import flash.display.BitmapData;
 	import flash.display.LineScaleMode;
 	import flash.geom.Matrix;
+	import flash.display.Graphics;
 
 	public class Cell extends Body {
 
@@ -35,7 +36,7 @@
 			var _thornCoeff: Number = 1;
 			pointsCount = 2 * Math.floor(Math.sqrt(20 * _size));
 			var k: Number = 2 * Math.PI / pointsCount;
-			for(var i: uint = 0; i < pointsCount; i++) {
+			for(var i: int = 0; i < pointsCount; i++) {
 				_thornCoeff = (i % 2) && _isVir ? 0.9 : 1;
 				//ВНИМАНИЕ! Стоит обратить внимание, что тут под сайзом точки, передаваемым третьим параметром, понимается ее коэффициент деформации.
 				//При желании можно изменить это: передавать единичный вектор и настоящую удаленность от центра, но тогда нужно менять hitCells.
@@ -162,25 +163,26 @@
 		}
 
 		public function recovery() {
-			for(var i: uint = 0; i < pointsCount; i++) {
+			for(var i: int = 0; i < pointsCount; i++) {
 				_points[i].setSize(1);
 			}
 		}
 
 		public function smooth() {
-			for(var i: uint = 0; i < pointsCount; i++) {
+			for(var i: int = 0; i < pointsCount; i++) {
 				_points[i].setSize((_points[(i + pointsCount - 1) % pointsCount].size() + _points[(i + pointsCount - 2) % pointsCount].size() + _points[(i + 1) % pointsCount].size() + _points[(i + 2) % pointsCount].size() + 4 * _points[i].size()) / 8);
 			}
 		}
 
 		public function draw() {
-			rounderObject.graphics.clear();
-			rounderObject.graphics.beginFill(color);
-			rounderObject.graphics.lineStyle(3, color + 0x006600, 1.0, false, LineScaleMode.NONE);
-			rounderObject.graphics.moveTo(_points[0].sx(), _points[0].sy());
+			var gr:Graphics = rounderObject.graphics;
+			gr.clear();
+			gr.beginFill(color);
+			gr.lineStyle(3, color + 0x006600, 1.0, false, LineScaleMode.NONE);
+			gr.moveTo(_points[0].sx(), _points[0].sy());
 
-			for(var i: uint = 0; i < pointsCount; i++) {
-				rounderObject.graphics.lineTo(_points[i].sx(), _points[i].sy());
+			for(var i: int = 0; i < pointsCount; ++i) {
+				gr.lineTo(_points[i].sx(), _points[i].sy());
 			}
 		}
 	}

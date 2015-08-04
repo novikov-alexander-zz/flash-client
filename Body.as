@@ -1,8 +1,6 @@
 ﻿package  {
 	import flash.display.Sprite;
 	import flash.display.Shape;
-	import flash.display.BitmapData;
-	import flash.geom.Matrix;
 	
 	public class Body extends Sprite {
 
