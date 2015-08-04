@@ -49,6 +49,9 @@
 			setSize(_size);			
 		}
 
+		public function setText(text:String){
+			textField.text = text;			
+		}
 		public function setSize(size: Number): void {
 			removeChildren();
 			_size = size;

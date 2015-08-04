@@ -26,6 +26,9 @@
 		private var pointsAcc: Array = new Array();
 		private var tPointsAcc: Array = new Array();
 
+		//_gx,_gy - глобальные координаты
+		//size - радиус 
+		//nd,md - флаги отображения ника и массы
 		public function Cell(_x: Number, _y: Number, _gx: Number, _gy: Number, size: Number, color: Number = 0x0000FF, _isVir: Boolean = false, nd: Boolean = true, md: Boolean = false, nickname: String = "Cell") {
 			this.x = _x;
 			this.y = _y;
@@ -81,33 +84,34 @@
 			var bY:Number = b.y;
 			var bSize:Number = b._size;
 			
+			// квадрат расстояния между центрами клеток
 			var dist2:Number = (aX - bX)*(aX - bX) + (aY - bY)*(aY - bY);
+			// Расстояние между центрами, при котором начинает происходить столкновение
 			var sSize:Number = bSize+aSize;
 			if (dist2 >= sSize*sSize){
-				//return a;
+				//нет столкновения
 				return;
 			}
 			bSize *= bSize;
 			bSize = 1/bSize;
 			aSize *= aSize;
-			//trace("2")
+			
 			var radius:Number;
 			var apX:Number;
 			var apY:Number;
-			//trace("3")
+			
 			for (var i:int = 0; i < a.pointsCount; i += 1){
-				//trace("4")
+				
 				var point:CellPoint = a._points[i];
+				// координата точки на границе клетки в локальных координатах
 				apX = point.sx() + aX;
-				//trace("4.1")
 				apY = point.sy() + aY;
-				//trace("4.2")
+				// если расстояние до чужой клетки больше её радиуса, не изменяем координаты точки
 				dist2 = ((apX - bX)*(apX - bX) + (apY - bY)*(apY - bY))*bSize;
-				//trace("4.3")
 				if (dist2 > 1){
 					continue;
 				}
-				//trace("5")
+				// иначе приближаем точку к центру
 				radius = point.size();
 				var r2:Number = radius*radius;
 				while((dist2 < r2*r2) && (dist2 < 1) && (radius > 0.7)){
@@ -160,8 +164,13 @@
 			this._size = _size;
 			this.rounderObject.width = _size +_size;
 			this.rounderObject.height = _size + _size;
-			if (_name!= null)
+			if (_name!== null)
 				_name.setSize(_size);
+			if (_mass!== null){
+				_mass.setText(String(int(_size)));
+				_mass.setSize(_size);
+				_mass.setY(_mass.getTH() / 4 + 2.5)
+			}
 		}
 
 		public function recovery() {

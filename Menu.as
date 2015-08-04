@@ -48,7 +48,7 @@
 		}
 
 		private function ffaBtnHandler(e: MouseEvent): void {
-			game.isFFA = 1;
+			game.isFFA = true;
 			ffaBtn.enabled = false;
 			teamsBtn.enabled = false;
 			game.goPlay();
@@ -56,7 +56,7 @@
 		}
 
 		private function teamsBtnHandler(e: MouseEvent): void {
-			game.isFFA = 0;
+			game.isFFA = false;
 			gotoAndStop(4); // help
 			exitBtn4.addEventListener(MouseEvent.CLICK, exitBtnHandler); // frame 4
 		}
@@ -66,9 +66,9 @@
 			exitBtn3.addEventListener(MouseEvent.CLICK, exitBtnHandler3); // frame 3
 			nickNameFld.maxChars = 16;
 			nickNameFld.text = game.nickName;
-			showMassChb.selected = game.showMass > 0;
-			showNickChb.selected = game.showNick > 0;
-			showSkinsChb.selected = game.showSkins > 0;
+			showMassChb.selected = game.showMass === true;
+			showNickChb.selected = game.showNick === true;
+			showSkinsChb.selected = game.showSkins === true;
 			themeNoSelector.value = game.themeNo;
 			stage.focus = nickNameFld;
 		}
@@ -94,9 +94,9 @@
 		private function exitBtnHandler3(e: MouseEvent): void {
 			game.nickName = nickNameFld.text;
 			game.themeNo = themeNoSelector.value;
-			game.showMass = int(showMassChb.selected);
-			game.showNick = int(showNickChb.selected);
-			game.showSkins = int(showSkinsChb.selected);
+			game.showMass = showMassChb.selected;
+			game.showNick = showNickChb.selected;
+			game.showSkins = showSkinsChb.selected;
 			gotoAndStop(1); // menu
 			startBtn.addEventListener(MouseEvent.CLICK, startBtnHandler); // frame 1 menu
 			settingsBtn.addEventListener(MouseEvent.CLICK, settingsBtnHandler); // frame 1 menu
