@@ -2,18 +2,13 @@
 	import playerio.*;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.events.TimerEvent;
 	import flash.display.Shape;
 	import flash.events.MouseEvent;
-	import flash.utils.setInterval;
 	import flash.display.Shader;
 	import flash.geom.Point;
-	import flash.geom.Matrix;
 	import flash.display.StageScaleMode;
 	import flash.geom.Rectangle;
 	import flash.events.KeyboardEvent;
-	import flash.utils.getTimer;
-	import flash.utils.Timer;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFieldType;
@@ -27,23 +22,27 @@
 		public var gameID: String = "cells2-5yrswumyieeskxfpoge6q";
 		public var userID: String;
 		public var connection: Connection;
-		private var cl:Client;
+		
+		//Интерфейс для взаимодействия с меню(Menu.as)
+		public var showMass: int = 0;
+		public var showNick: int = 1;
+		public var showSkins: int = 0;
+		public var isFFA: int = 1;
+		public var themeNo: int = 1;
+		public var nickName: String = new String("Player");
+		
+		//Границы игрового поля в координатах клиента 
+		//(С учетом масштаба и координаты центра экрана)
+		public var ctb:Number = 0, clb:Number = 0, crb:Number = 5000, cbb:Number = 5000;
+		
 		//---------------------------------------
 		// PRIVATE VARIABLES
 		//---------------------------------------
-		private var _background: Sprite; // Спрайт для фона (пока не используется)
-		private var _display: Sprite; // Спрайт для клеток игроков и вирусов
-		private var _enviroment: Sprite; // Спрайт для кормовых точек
-		//private var _circle: Shape;
-		//private var _cell:Cell;
+		private var cl:Client;
 
-		//private var _players: Vector.<String> = new Vector.<String>(); //Список игроков
-		private var currentPlayer: Player;
-		private const maxPlayers = 150;
-		private var players: Vector.<Player> = new Vector.<Player> ();
-		private var _cells: Vector.<Cell> = new Vector.<Cell> (); // Список клеток всех игроков
-		private var _throws: Vector.<CellChild> = new Vector.<CellChild> (); // Список отщепленных кормовых частиц с клетки
-		private var _viruses: Vector.<VirusCell> = new Vector.<VirusCell> (); // Список вирусов
+		private const maxPlayers:int = 150;
+		//TODO сделать на сервере так, чтобы id еды был меньше константы. 
+		//Тогда можно заменить Dictionary здесь на Vector.<Feed>(const)
 		private var _feed: Dictionary = new Dictionary();
 		private var renderedCells:Vector.<BodiesDictionary> = new Vector.<BodiesDictionary>(maxPlayers);
 		private var waitingCells:Vector.<BodiesDictionary> = new Vector.<BodiesDictionary>(maxPlayers);
@@ -52,11 +51,6 @@
 		
 		private var isMouseDown: Boolean = false;
 		private var messageString: TextField = new TextField();
-
-		private var avgPing: Number = 0;
-		private var rcntUpdt: Number = 0;
-		private var messages:Vector.<Message> = new Vector.<Message>();
-		private var wtime:int = 0;
 		
 		private var lastX:Number = 0, lastY:Number = 0, nextX:Number = 100, nextY:Number = 100;
 		private var xArea:Number = 274;
@@ -64,38 +58,25 @@
 		private var lastxm:Number = 0;
 		
 		private var fsu:int = -1;
-		private var inbetween:uint = 0;
-		
-		public var showMass: int = 0;
-		public var showNick: int = 1;
-		public var showSkins: int = 0;
-		public var isFFA: int = 1;
-		public var themeNo: int = 1;
-		public var nickName: String = new String("Player");
 		
 		private var sMBShowed: Boolean = false;
 		
 		private var bckg:Grid = null;
 		private var world:Sprite = new Sprite();
 		private var feedSpr:Sprite = new Sprite;
-		private var playersCellsInstances = new Sprite();
+		private var playersCellsInstances:Sprite = new Sprite();
 		private var msgBox:ShortMessageBox = new ShortMessageBox();
 		private var menu:Menu;
 		private var cScr:ConnectingScreen = new ConnectingScreen();
-		private var curFrame:uint = 0;
 		
-		private var nnArr = new Array(maxPlayers);
+		private var nnArr:Array = new Array(maxPlayers);
 		
-		private var tb = 0, lb = 0, rb = 2505, bb = 2505;
-		public var ctb = 0, clb = 0, crb = 5000, cbb = 5000;
+		private var tb:int = 0, lb:int = 0, rb:int = 2505, bb:int = 2505;
 		
 		private var chartWindow:Chart = new Chart();
 		
 		private var vkapi:VkApi;
-		private var curMsg:Message;
 		private var nextMsg:Message;
-		
-		private var period;
 		
 		private var playersGotten:Boolean = false;
 		
@@ -120,20 +101,20 @@
 			(stage == null) ? addEventListener(Event.ADDED_TO_STAGE, init) : init(null);
 			
 			bckg = new Grid();
-			bckg.cacheAsBitmap = true;
+			//bckg.cacheAsBitmap = true;
 			vkapi = new VkApi(stage);
 			addChildAt(bckg,0);
-			addChildAt(world,3);
-			addChildAt(playersCellsInstances,2);
 			addChildAt(feedSpr,1);
+			addChildAt(playersCellsInstances,2);
+			addChildAt(world,3);
 			addChildAt(msgBox,4);
 			msgBox.visible = false;
 			msgBox.y = stage.stageHeight - msgBox.height;
 			chartWindow.visible = true;
 			var myC:FPSMemCounter = new FPSMemCounter(0);
-			//var chartWindow1:Chart = new Chart();
 			addChildAt(myC,4);
 			addChildAt(chartWindow,6);
+			addChildAt(menu,7);
 			chartWindow.y = stage.stageHeight - chartWindow.height- 50;
 			addChild(vkapi);
 			vkapi.y = stage.stageHeight - vkapi.height;
@@ -216,12 +197,6 @@
 				_feedPtr[i] = 0;
 			}
 */
-			_enviroment = new Sprite(); // Спрайт для кормовых точек
-			addChild(_enviroment);
-			_display = new Sprite(); // Спрайт для клеток игроков и вирусов
-			addChild(_display);
-			_background = new Sprite(); // Спрайт для фона (пока не используется) 
-			addChild(_background);
 
 			userID = "User" + Math.floor(Math.random() * 1000).toString(); //генерация Айди для текущего игрока
 			// TODO предусмотреть чтобы он не повторялся с другими игроками
@@ -239,7 +214,7 @@
 			menu.width = 200;
 			menu.height = 300;
 			menu.alpha = 0.6;
-			addChild(menu);
+			//addChild(menu);
 			addChild(messageString);
 			messageString.visible = true;
 			messageString.x = 10;
@@ -365,7 +340,7 @@
 			nextX = m.getNumber(0);
 			nextY = m.getNumber(1);
 			if (connection != null) {
-				connection.send("currentMouse", lastX+(_display.mouseX-stage.stageWidth/2)/stage.stageWidth*xArea, lastY+(_display.mouseY-stage.stageHeight/2)/stage.stageHeight*yArea);
+				connection.send("currentMouse", lastX+(stage.mouseX-stage.stageWidth/2)/stage.stageWidth*xArea, lastY+(stage.mouseY-stage.stageHeight/2)/stage.stageHeight*yArea);
 			}
 			//trace("mouse");
 
@@ -425,18 +400,6 @@
 			//var k:int = idArr.indexOf(pid);
 			//idArr.splice(k,1);
 			//nnArr.splice(k,1);
-		}
-
-		private function checkMessages(){
-			curMsg = nextMsg;
-			var n:uint = 0;
-			var min:uint = uint.MAX_VALUE;
-			for(var i:uint = 0; i < messages.length; i++)
-				if ((messages[i].getNumber(0)>curMsg.getNumber(0))&&(messages[i].getNumber(0)<min))
-					n = i;
-			nextMsg = messages[n];
-			if (nextMsg.getNumber(0) < curMsg.getNumber(0))
-					checkMessages();
 		}
 		
 		private function onEnterFrame(e: Event) {
@@ -667,31 +630,6 @@
 			if (fsu == 2){
 				addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			} 
-		}
-
-		// присоединение нового игрока
-		private function newPlayerJoined(m: Message) {
-			// в сообщение ID присоединившегося игрока
-			//_players.push(m.getString(0));
-			var player = new Player(m.getString(0));
-			//players.push(player);
-			if (m.getString(0) == userID) {
-				currentPlayer = player;
-			} else {
-				players.push(player);
-			}
-
-			_display.addChild(player.Cells[0]);
-		}
-
-
-		private var _r: Number;
-		// в сообщении 1) счёт игрока 2) номер текущей его клетки 3) радиус этой клетки
-		private function gotScore(m: Message) {
-			//
-			var index = m.getInt(1);
-			_r = m.getNumber(2);
-			//currentPlayer.Cells[index].SetSize(_r);
 		}
 
 		private function messageHandler(m: Message) {

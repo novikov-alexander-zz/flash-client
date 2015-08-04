@@ -35,7 +35,7 @@
 			super();
 			this._size = _size;
 			if (_text == null)
-				_text = "Unknow cell";
+				_text = "Unknown cell";
 			this.textField.text = _text;
 
 			this.format1.font = "Verdana";
@@ -57,7 +57,7 @@
 			this.format1.size = Math.floor(nameLength / Number(textField.text.length));
 			this.textField.setTextFormat(format1);
 
-			var bmpd:BitmapData = new BitmapData(textField.textWidth+4, textField.textHeight, true, 0);			
+			var bmpd:BitmapData = new BitmapData(textField.textWidth+4, textField.textHeight+textField.textHeight, true, 0);			
 			bmpd.draw(textField);
 			bmp = new Bitmap(bmpd)
 			addChild(bmp);

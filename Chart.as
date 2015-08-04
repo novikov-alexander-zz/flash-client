@@ -1,4 +1,4 @@
-package
+﻿package
 {
 	import flash.display.Sprite;
 	import fl.controls.Label;
@@ -39,7 +39,7 @@ package
 			//txtArea1.mouseEnabled = false;
 			//txtArea1.setTextFormat(format1);
 			//setMsg('12345678','01234567890123456789012345678901234567890123456789012345','ff0000');
-			txtArea.text = "Label";
+			//txtArea.text = "Label";
 			//txtArea.htmlText = "";
 			txtArea.alpha = 0.6;
 			//txtArea1.text = "Label1";

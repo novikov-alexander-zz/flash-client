@@ -42,8 +42,6 @@
 				_points.push(new CellPoint(_size * Math.sin(i * k) * _thornCoeff, _size * Math.cos(i * k) * _thornCoeff));
 			}
 			rounderObject = new Shape();
-			bmp = new BitmapData(4 * size, 4 * size, true, 0);
-			m.translate(size, size);
 			addChild(rounderObject);
 
 			if(nickname == null)
@@ -125,22 +123,6 @@
 		}
 
 
-		private function checkPoint(cp: CellPoint, a: Cell, _pointsAcc: Array): Boolean {
-			if(cp.size() > 0.75) {
-				p1.setTo(a.x - a.csize, a.y - a.csize);
-				p2.setTo(cp.sx() + x, cp.sy() + y);
-				if(a.bmp.hitTest(p1, 0xFF, p2)) {
-					cp.decreaseSize(0.01);
-					_pointsAcc.push(cp);
-					return false;
-				}
-			}
-			/*else {
-				cp.setSize(1);
-			}*/
-			return true;
-		}
-
 		private function checkBound(cp: CellPoint, game: Game, _pointsAcc: Array): Boolean {
 			if((cp.sx()*1.421 + this.x < game.clb) ||
 				(cp.sx()*1.421 + this.x > game.crb) ||
@@ -157,23 +139,12 @@
 			var cX:Number = this.x;
 			var cY:Number = this.y;
 			var cSize:Number = this._size;
-
-			/*if (cX + cSize < game.crb && cX - cSize > game.clb && cY - cSize > game.ctb && cY + cSize < game.cbb){
-				return;
-			}*/
-			//trace("lol2")
-			//trace((cX > game.crb || cX < game.clb || cY < game.ctb || cY > game.cbb))
-			/*if (cX > game.crb  || cX < game.clb || cY < game.ctb || cY > game.cbb){
-				return;
-			}*/
-			//trace("lol1")
 			var pX;
 			var pY;
-			for (var i:int = 0; i < _points.length; i += 1){
+			for (var i:int = 0; i < pointsCount; i += 1){
 				pX = _points[i].sx() + cX;
 				pY = _points[i].sy() + cY;
 				while((pX > game.crb || pX < game.clb || pY < game.ctb || pY > game.cbb) && (this._points[i].size() > 0.55)){
-					//trace("lol")
 					this._points[i].decreaseSize(0.05);
 					pX = this._points[i].sx() + cX;
 					pY = this._points[i].sy() + cY;
@@ -182,37 +153,10 @@
 
 		}
 
-		public function hTest(a: Cell): Boolean {
-			var fin: Boolean = true;
-
-			a.bmp.fillRect(a.bmp.rect, 0);
-			a.bmp.draw(a.buf, a.m);
-
-			if(pointsAcc.length == 0) {
-				for(var i: uint = 0; i < pointsCount; i++) {
-					var cp: CellPoint = _points[i];
-					fin = checkPoint(cp, a, pointsAcc) && fin;
-				}
-			} else {
-				while(pointsAcc.length != 0) {
-					cp = pointsAcc.pop();
-					fin = checkPoint(cp, a, tPointsAcc) && fin;
-				}
-				var tArr: Array = pointsAcc;
-				pointsAcc = tPointsAcc;
-				tPointsAcc = tArr;
-			}
-			return fin;
-		}
-
 		public override function set csize(_size: Number) {
-			if(2 * _size > bmp.width) {
-				bmp = new BitmapData(4 * _size, 4 * _size, true, 0);
-			}
-			m.translate(2*(_size - this._size), 2*(_size - this._size));
 			this._size = _size;
-			rounderObject.height = 2*_size;
-			rounderObject.width = 2*_size;
+			this.rounderObject.width = _size +_size;
+			this.rounderObject.height = _size + _size;
 			if (_name!= null)
 				_name.setSize(_size);
 		}
@@ -220,39 +164,7 @@
 		public function recovery() {
 			for(var i: uint = 0; i < pointsCount; i++) {
 				_points[i].setSize(1);
-				draw();
 			}
-			/*var fin:Boolean = true;
-			var tfin:Boolean = false;
-			var l: uint = cells.length;
-			for(var i: uint = 0; i < pointsCount; i++) {
-				if((_points[i].ssx(10) + this.x > game.clb) &&
-					(_points[i].ssx(10) + this.x < game.crb) &&
-					(_points[i].ssy(10) + this.y > game.ctb) &&
-					(_points[i].ssy(10) + this.y < game.cbb)) {
-					if(_points[i].size() < 0.99) {
-						for(var c: uint = 0; c < l; c++) {
-							for each(var a in cells[c]) {
-								a.bmp.fillRect(a.bmp.rect, 0);
-								a.bmp.draw(a.buf, a.m);
-								if(a.bmp.hitTest(new Point(a.x - a.csize, a.y - a.csize), 0xFF, new Point(_points[i].ssx(10) + this.x, _points[i].ssy(10) + this.y))) {
-									tfin = true;
-									break;
-								}
-							}
-						}
-						if(!tfin) {
-							_points[i].increaseSize();
-							continue;
-						} else {
-							fin = tfin;
-						}
-						tfin = false;
-					}
-				}
-			}
-			return fin;
-		*/
 		}
 
 		public function smooth() {
@@ -262,7 +174,6 @@
 		}
 
 		public function draw() {
-			//drawToBuf();
 			rounderObject.graphics.clear();
 			rounderObject.graphics.beginFill(color);
 			rounderObject.graphics.lineStyle(3, color + 0x006600, 1.0, false, LineScaleMode.NONE);
@@ -272,34 +183,5 @@
 				rounderObject.graphics.lineTo(_points[i].sx(), _points[i].sy());
 			}
 		}
-
-		public function drawToBuf() {
-			buf.graphics.clear();
-
-			buf.graphics.beginFill(color);
-			buf.graphics.lineStyle(3, color + 0x006600, 1.0, false, LineScaleMode.NONE);
-			buf.graphics.moveTo(_points[0].sx(), _points[0].sy());
-
-			for(var i: uint = 0; i < pointsCount; i++) {
-				buf.graphics.lineTo(_points[i].sx(), _points[i].sy());
-			}
-
-		}
-
-		public function isDragable(): void {
-			addEventListener(MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			addEventListener(MouseEvent.MOUSE_UP, mouseReleasedHandler);
-		}
-
-		function mouseDownHandler(e: MouseEvent): void {
-			this.y += 25;
-			startDrag();
-		}
-
-		//Эта функция вызывается, когда пользователь отпускает мышь
-		function mouseReleasedHandler(e: MouseEvent): void {
-			stopDrag();
-		}
-
 	}
 }

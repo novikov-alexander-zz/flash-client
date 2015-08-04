@@ -8,9 +8,6 @@
 
 		protected var _size: Number;
 		protected var rounderObject:Shape = new Shape();
-		public var bmp:BitmapData;
-		public var m:Matrix = new Matrix();
-		public var buf: Shape = new Shape();
 
 		public function get csize() {
 			return _size;
