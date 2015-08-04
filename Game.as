@@ -38,9 +38,13 @@
 		//---------------------------------------
 		// PRIVATE VARIABLES
 		//---------------------------------------
+		//Объект, содержащий интерфейс работы с сервером.
 		private var cl:Client;
 
 		private const maxPlayers:int = 150;
+
+		//Словари и массивы, хранящие отрисовываемые объекты.
+		
 		//TODO сделать на сервере так, чтобы id еды был меньше константы. 
 		//Тогда можно заменить Dictionary здесь на Vector.<Feed>(const)
 		private var _feed: Dictionary = new Dictionary();
