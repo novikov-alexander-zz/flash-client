@@ -6,7 +6,8 @@
 
 		protected var _size: Number;
 		protected var rounderObject:Shape = new Shape();
-
+		public var gx:Number, gy:Number;
+		
 		public function get csize() {
 			return _size;
 		}

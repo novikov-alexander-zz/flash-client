@@ -463,15 +463,15 @@
 					var virus: Cell = waitingVirAndPlasm[id];
 					size = m.getNumber(i + 3)*xm;
 					if (virus == undefined){
-						virus = new Cell(_x, _y, size, 0x00FF00, true);
+						virus = new Cell(_x, _y, _gx, _gy, size, 0x00FF00, true);
 					} else {
 						delete waitingVirAndPlasm[id];
-						var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-virus.x)/koeff;
-						var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-virus.y)/koeff;
-						virus.x += ddx;
-						virus.y += ddy;
-						//virus.x = _x;
-						//virus.y = _y;
+						var ddx = (_gx - virus.gx)/koeff;
+						var ddy = (_gy - virus.gy)/koeff;
+						virus.gx += ddx;
+						virus.gy += ddy;
+						virus.x = (virus.gx + xa)*xm;
+						virus.y =  (virus.gy + ya)*ym;
 						virus.csize = size;
 						virus.recovery();
 					}
@@ -490,12 +490,12 @@
 					var cell:Cell;
 					size = m.getNumber(i + 3)*xm;
 					if (cellDict.empty){
-						cell = new Cell(_x,_y,size,pid,false,showNick,showMass, nnArr[pid]);
+						cell = new Cell(_x,_y, _gx, _gy, size,pid,false,showNick,showMass, nnArr[pid]);
 					} else {
 						cell = waitingCells[pid][id];
 						delete waitingCells[pid][id];
 						if (cell == undefined)
-							cell = new Cell(_x,_y,size,pid,false,showNick,showMass, nnArr[pid]);
+							cell = new Cell(_x,_y, _gx, _gy, size,pid,false,showNick,showMass, nnArr[pid]);
 						var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-cell.x)/koeff;
 						var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-cell.y)/koeff;
 						cell.x += ddx;
@@ -515,13 +515,15 @@
 					var plasm: Protoplasm = waitingVirAndPlasm[id];
 					size = m.getNumber(i + 3)*xm;
 					if (plasm == undefined){
-						plasm = new Protoplasm(_x, _y, size, 0x00FF00);
+						plasm = new Protoplasm(_x, _y, _gx, _gy, size, 0x00FF00);
 					} else {
 						delete waitingVirAndPlasm[id];
-						var ddx = ((_gx + xArea/2 - m.getNumber(1))*xm-plasm.x)/koeff;
-						var ddy = ((_gy + yArea/2 - m.getNumber(2))*ym-plasm.y)/koeff;
-						plasm.x += ddx
-						plasm.y += ddy;
+						var ddx = (_gx - plasm.gx)/koeff;
+						var ddy = (_gy - plasm.gy)/koeff;
+						plasm.gx += ddx;
+						plasm.gy += ddy;
+						plasm.x = (plasm.gx + xa)*xm;
+						plasm.y =  (plasm.gy + ya)*ym;
 						plasm.csize = size;
 						plasm.recovery();
 					}

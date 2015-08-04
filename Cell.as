@@ -26,9 +26,11 @@
 		private var pointsAcc: Array = new Array();
 		private var tPointsAcc: Array = new Array();
 
-		public function Cell(_x: Number, _y: Number, size: Number, color: Number = 0x0000FF, _isVir: Boolean = false, nd: Boolean = true, md: Boolean = false, nickname: String = "Cell") {
+		public function Cell(_x: Number, _y: Number, _gx: Number, _gy: Number, size: Number, color: Number = 0x0000FF, _isVir: Boolean = false, nd: Boolean = true, md: Boolean = false, nickname: String = "Cell") {
 			this.x = _x;
 			this.y = _y;
+			gx = _gx;
+			gy = _gy;
 			this._size = size;
 
 			this.color = _isVir ? 0x00FF00 : color;

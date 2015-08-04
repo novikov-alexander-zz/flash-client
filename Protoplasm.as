@@ -9,8 +9,8 @@
 	import flash.geom.Matrix;
 
 	public class Protoplasm extends Cell{
-		public function Protoplasm(_x: Number, _y: Number, size: Number, color: Number = 0x0000FF) {
-			super(_x, _y, size, color, false, false)
+		public function Protoplasm(_x: Number, _y: Number, _gx: Number, _gy: Number, size: Number, color: Number = 0x0000FF) {
+			super(_x, _y, _gx, _gy, size, color, false, false)
 		}
 	}
 }
